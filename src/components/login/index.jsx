@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Form, Input, Button, Icon } from "antd";
+import { Form, Input, Button, Icon, message } from "antd";
+import axios from "axios";
 import logo from "./logo.png";
 import "./index.less";
 
@@ -7,6 +8,7 @@ const { Item } = Form;
 
 @Form.create()
 class Login extends Component {
+  // 表单校验函数
   validator = (rule, value, callback) => {
     /*
       rule 用来获取当前校验的是哪个表单/Input
@@ -32,6 +34,48 @@ class Login extends Component {
     }
   };
 
+  // 登录
+  login = e => {
+    e.preventDefault();
+    // 缓存一下
+    const { form } = this.props;
+
+    // 校验表单并获取表单项的值
+    form.validateFields((err, values) => {
+      /*
+        err 校验后的错误信息
+        values 表单项的值 
+      */
+      if (!err) {
+        // 校验成功
+        console.log(values);
+        // 发送请求，请求登录
+        axios
+          .post("http://localhost:5000/api/login", values)
+          .then(response => {
+            // 请求成功（不代表登录成功）
+            // 判断response.data的值，来判断是否登录成功
+            if (response.data.status === 0) {
+              // 登录成功
+              this.props.history.push("/");
+            } else {
+              // 登录失败  提示错误
+              message.error(response.data.msg);
+              // 清空密码
+              form.resetFields(["password"]);
+            }
+          })
+          .catch(err => {
+            console.log(err);
+            // 提示错误
+            message.error("网络出现故障，请刷新试试~");
+            // 清空密码
+            form.resetFields(["password"]);
+          });
+      }
+    });
+  };
+
   render() {
     // getFieldDecorator方法也是一个高阶组件用法
     const { getFieldDecorator } = this.props.form;
@@ -43,9 +87,8 @@ class Login extends Component {
           <h1>React项目: 后台管理系统</h1>
         </header>
         <section className="login-section">
-          <Form>
+          <Form onSubmit={this.login}>
             <h3>用户登录</h3>
-
             <Item>
               {getFieldDecorator("username", {
                 // 表单校验规则
@@ -95,7 +138,8 @@ class Login extends Component {
               )}
             </Item>
             <Item>
-              <Button type="primary" className="login-btn">
+              {/* htmlType="submit" 设置原生type */}
+              <Button type="primary" className="login-btn" htmlType="submit">
                 登录
               </Button>
             </Item>
