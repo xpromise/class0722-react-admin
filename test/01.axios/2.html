@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="btn1">按钮1</button>
+  <button id="btn2">按钮2</button>
+  <button id="btn3">按钮3</button>
+  <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
+  <script>
+    const btn1 = document.getElementById('btn1')
+    const btn2 = document.getElementById('btn2')
+    const btn3 = document.getElementById('btn3')
+    /*
+      问题：发送axios中有太多重复代码，需要复用/简化
+      解决：axios拦截器
+    */
+    let token = '';
+
+    // axiosInstance就是Axios实例对象，它的用法和axios基本一样
+    const axiosInstance = axios.create({
+      baseURL: 'http://localhost:5000/api', // 基础路径：所有请求的公共路径
+      timeout: 10000, // 如果请求超过10s都没有响应结果，就自动中断请求
+      headers: {
+        // 公共的请求头参数
+      }
+    });
+
+    // 设置axios拦截器
+    // 请求拦截器: 在axios发送请求之前触发的拦截器回调函数
+    axiosInstance.interceptors.request.use(
+      // 将要发送请求是成功的（内部没有出错）触发回调函数
+      (config) => {
+        // console.log(config); // 请求配置信息
+        // 功能：修改请求信息
+        if (config.method === 'post') {
+          config.headers['content-type'] = 'application/x-www-form-urlencoded';
+          /* 
+            修改data数据 成 urlencoded
+              { key1: value1, key2: value2 } ---> 'key1=value1&key2=value2'
+          */
+          config.data = Object.keys(config.data).reduce((prev, key) => {
+            const value = config.data[key];
+            return prev + `&${key}=${value}`;
+          }, '').substring(1);
+        }
+
+        if (token) {
+          config.headers.authorization = 'Bearer ' + token;
+        }
+
+        return config;
+      },
+      // 将要发送请求是失败的（内部出错了）触发回调函数
+      /* (error) => {
+        // 一般没啥用，所以一般不写
+        return Promise.reject(error);
+      } */
+    )
+    // 响应拦截器
+
+
+    btn1.onclick = function () {
+      // 发送请求
+      /*
+        在axios中默认post请求的content-type是application/json
+        但是，有可能公司要求content-type用application/x-www-form-urlencoded
+      */
+      axiosInstance({
+          method: 'POST',
+          url: '/login',
+          data: {
+            username: 'admin',
+            password: 'admin'
+          },
+          // data: 'username=admin&password=admin',
+          /* headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          } */
+        })
+        .then((response) => {
+          if (response.data.status === 0) {
+            // 登录成功
+            console.log(response.data.data);
+
+            token = response.data.data.token;
+          } else {
+            // 登录失败
+            alert(response.data.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('网络出错~');
+        })
+    }
+
+    btn2.onclick = function () {
+      axiosInstance({
+          method: 'GET',
+          url: '/category/get',
+          /* headers: {
+            authorization: 'Bearer ' + token
+          } */
+        })
+        .then((response) => {
+          if (response.data.status === 0) {
+            console.log(response.data.data);
+          } else {
+            alert(response.data.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('网络出错~');
+        })
+    }
+
+    btn3.onclick = function () {
+      axiosInstance({
+          method: 'POST',
+          url: '/category/add',
+          // data: 'categoryName=鼠标',
+          data: {
+            categoryName: '鼠标'
+          },
+          headers: {
+            // 'content-type': 'application/x-www-form-urlencoded',
+            // authorization: 'Bearer ' + token
+          }
+        })
+        .then((response) => {
+          if (response.data.status === 0) {
+            console.log(response.data.data);
+          } else {
+            alert(response.data.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('网络出错~');
+        })
+    }
+  </script>
+</body>
+
+</html>

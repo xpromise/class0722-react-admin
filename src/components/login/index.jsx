@@ -48,7 +48,7 @@ class Login extends Component {
       */
       if (!err) {
         // 校验成功
-        console.log(values);
+        console.log(values); // 收集表单数据
         // 发送请求，请求登录
         axios
           .post("http://localhost:5000/api/login", values)
@@ -57,6 +57,10 @@ class Login extends Component {
             // 判断response.data的值，来判断是否登录成功
             if (response.data.status === 0) {
               // 登录成功
+              /*
+                如果render方法中自动跳转网址，可以用Redirect
+                如果在其他回调函数中，就用history.push()
+              */
               this.props.history.push("/");
             } else {
               // 登录失败  提示错误

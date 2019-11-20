@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <button id="btn1">按钮1</button>
+  <button id="btn2">按钮2</button>
+  <button id="btn3">按钮3</button>
+  <script src="https://cdn.bootcss.com/axios/0.19.0/axios.min.js"></script>
+  <script>
+    const btn1 = document.getElementById('btn1')
+    const btn2 = document.getElementById('btn2')
+    const btn3 = document.getElementById('btn3')
+
+    let token = '';
+
+    btn1.onclick = function () {
+      // 发送请求
+      /*
+        在axios中默认post请求的content-type是application/json
+        但是，有可能公司要求content-type用application/x-www-form-urlencoded
+      */
+      axios({
+          method: 'POST',
+          url: 'http://localhost:5000/api/login',
+          /* data: {
+            username: 'admin',
+            password: 'admin'
+          }, */
+          data: 'username=admin&password=admin',
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        })
+        .then((response) => {
+          if (response.data.status === 0) {
+            // 登录成功
+            console.log(response.data.data);
+
+            token = response.data.data.token;
+          } else {
+            // 登录失败
+            alert(response.data.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('网络出错~');
+        })
+    }
+
+    btn2.onclick = function () {
+      axios({
+          method: 'GET',
+          url: 'http://localhost:5000/api/category/get',
+          headers: {
+            authorization: 'Bearer ' + token
+          }
+        })
+        .then((response) => {
+          if (response.data.status === 0) {
+            console.log(response.data.data);
+          } else {
+            alert(response.data.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('网络出错~');
+        })
+    }
+
+    btn3.onclick = function () {
+      axios({
+          method: 'POST',
+          url: 'http://localhost:5000/api/category/add',
+          data: 'categoryName=鼠标',
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            authorization: 'Bearer ' + token
+          }
+        })
+        .then((response) => {
+          if (response.data.status === 0) {
+            console.log(response.data.data);
+          } else {
+            alert(response.data.msg);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('网络出错~');
+        })
+    }
+  </script>
+</body>
+
+</html>

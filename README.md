@@ -52,3 +52,17 @@
 
 1. 完成静态组件
 2. 完成动态组件
+
+- 表单校验
+  - Form.create()(Login) 高阶组件: 给 Login 组件传递 form 属性 （复用 form）
+  - form 对象上面有很多操作表单的方法
+    - getFieldDecorator 用于做表单校验
+      - getFieldDecorator('key', { rules: [ {required: true, message: ''}, {} ] })(<Input />)
+      - getFieldDecorator('key', { rules: [ {validator: this.validator} ] })(<Input />)
+    - resetFields 用于重置表单项
+    - validateFields 用于校验并收集表单数据
+- 登录功能
+  - Form 绑定 onSubmit 事件，Button 设置 htmlType 属性
+    - onSubmit 事件禁止默认行为
+  - validateFields 校验并收集表单数据
+  - 校验成功，发送请求，请求登录 axios
