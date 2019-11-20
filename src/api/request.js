@@ -5,6 +5,7 @@ import axios from 'axios';
 import {
   message
 } from 'antd';
+import store from '../redux/store';
 import codeMessage from '../config/code-message';
 
 // axiosInstance就是Axios实例对象，它的用法和axios基本一样
@@ -36,8 +37,12 @@ axiosInstance.interceptors.request.use(
       }, '').substring(1);
     }
 
-    // ？？？
-    const token = '';
+    // 从redux中读取user数据, 从user中读取token
+    const {
+      user: {
+        token
+      }
+    } = store.getState();
 
     if (token) {
       config.headers.authorization = 'Bearer ' + token;

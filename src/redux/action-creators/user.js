@@ -26,6 +26,7 @@ export const getUserAsync = (username, password) => {
         const action = getUserSuccess(response)
         // 调用dispatch方法
         dispatch(action);
+        return response;
       })
   }
 }

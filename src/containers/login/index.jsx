@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Form, Input, Button, Icon } from "antd";
 import { connect } from "react-redux";
 import { getUserAsync } from "../../redux/action-creators/user";
+import { setItem } from "../../utils/storage";
 import logo from "./logo.png";
 import "./index.less";
 
@@ -56,8 +57,9 @@ class Login extends Component {
         this.props
           .getUserAsync(username, password)
           .then(response => {
-            console.log(response);
-
+            // console.log(response);
+            // 持久化储存用户数据
+            setItem("user", response);
             this.props.history.push("/");
           })
           .catch(err => {
