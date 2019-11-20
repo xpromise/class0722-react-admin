@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { Form, Input, Button, Icon, message } from "antd";
-import axios from "axios";
+import { Form, Input, Button, Icon } from "antd";
+import { connect } from "react-redux";
+import { getUserAsync } from "../../redux/action-creators/user";
 import logo from "./logo.png";
 import "./index.less";
 
 const { Item } = Form;
 
+@connect(null, { getUserAsync })
 @Form.create()
 class Login extends Component {
   // 表单校验函数
@@ -48,31 +50,17 @@ class Login extends Component {
       */
       if (!err) {
         // 校验成功
-        console.log(values); // 收集表单数据
+        // console.log(values); // 收集表单数据
+        const { username, password } = values;
         // 发送请求，请求登录
-        axios
-          .post("http://localhost:5000/api/login", values)
+        this.props
+          .getUserAsync(username, password)
           .then(response => {
-            // 请求成功（不代表登录成功）
-            // 判断response.data的值，来判断是否登录成功
-            if (response.data.status === 0) {
-              // 登录成功
-              /*
-                如果render方法中自动跳转网址，可以用Redirect
-                如果在其他回调函数中，就用history.push()
-              */
-              this.props.history.push("/");
-            } else {
-              // 登录失败  提示错误
-              message.error(response.data.msg);
-              // 清空密码
-              form.resetFields(["password"]);
-            }
+            console.log(response);
+
+            this.props.history.push("/");
           })
           .catch(err => {
-            console.log(err);
-            // 提示错误
-            message.error("网络出现故障，请刷新试试~");
             // 清空密码
             form.resetFields(["password"]);
           });

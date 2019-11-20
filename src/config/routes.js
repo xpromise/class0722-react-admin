@@ -1,5 +1,5 @@
 import Home from '../components/home';
-import Login from '../components/login';
+import Login from '../containers/login';
 import NotMatch from '../components/not-match';
 
 export default [{

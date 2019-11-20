@@ -66,3 +66,19 @@
     - onSubmit 事件禁止默认行为
   - validateFields 校验并收集表单数据
   - 校验成功，发送请求，请求登录 axios
+
+## redux 开发流程
+
+1. 先定义 action-creators
+
+- 定义同步/异步
+  - 如果要发送请求，就定义异步
+  - 如果不要发送请求，就定义同步
+
+2. 定义 action-types
+
+3. 定义 reducer
+
+4. 通过 connect 高阶组件给 UI 组件传递 redux 数据
+
+5. 组件在使用传递过来的 redux 数据
