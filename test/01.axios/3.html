@@ -30,7 +30,7 @@
       timeout: 10000, // 如果请求超过10s都没有响应结果，就自动中断请求
       headers: {
         // 公共的请求头参数
-      }
+      },
     });
 
     // 设置axios拦截器
@@ -87,14 +87,37 @@
           没网 Network Error
           error.response 如果有值，服务器返回了响应 / 如果没有值，服务器没有返回响应
           error.response.status 401 没有携带token
-          407 token过期或失效
+          401 token过期或无效
           404 资源找不到
           403 禁止访问
           500 服务器内部错误
         */
-        console.dir(error);
-        alert('网络出错~');
-        return Promise.reject('网络出错~');
+
+        // 定义一个codeMessasge
+
+        const codeMessage = {
+          401: '没有权限访问接口',
+          403: '禁止访问',
+          404: '资源不存在',
+          500: '哇哦，故障了，请联系管理员~'
+        }
+
+        let errorMessage = '';
+
+        if (error.response) {
+          errorMessage = codeMessage[error.response.status] || '未知错误';
+        } else {
+          if (error.message.indexOf('Network Error') !== -1) {
+            errorMessage = '请检查网络连接';
+          } else if (error.message.indexOf('timeout') !== -1) {
+            errorMessage = '网络太卡了，请连上wifi重试';
+          } else {
+            errorMessage = '未知错误';
+          }
+        }
+        // console.dir(error);
+        alert(errorMessage);
+        return Promise.reject(errorMessage);
       }
     )
 
