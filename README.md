@@ -67,6 +67,27 @@
   - validateFields 校验并收集表单数据
   - 校验成功，发送请求，请求登录 axios
 
+## 4、封装 axios 拦截器
+
+1. 创建 axios 实例
+
+- 初始化公共的配置
+- 执行流程：
+  - 请求拦截器回调
+  - 发送请求
+  - 响应拦截器回调
+  - 最后绑定的 then/catch 回调
+
+2. 设置请求拦截器
+
+- 配置变化的请求信息
+  - post / content-type
+  - token
+
+3. 设置响应拦截器
+
+- 处理 成功 / 失败
+
 ## redux 开发流程
 
 1. 先定义 action-creators
