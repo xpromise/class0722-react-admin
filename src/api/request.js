@@ -15,14 +15,34 @@ import {
   removeUserSuccess
 } from '../redux/action-creators/user'
 
+
+const CancelToken = axios.CancelToken;
+const cancelTokenMap = new Map();
+
+const CANCEL_REQUEST_MESSAGE = 'cancel request';
+
 // axiosInstance就是Axios实例对象，它的用法和axios基本一样
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:5000/api', // 基础路径：所有请求的公共路径
   timeout: 10000, // 如果请求超过10s都没有响应结果，就自动中断请求
   headers: {
     // 公共的请求头参数
-  },
+  }
 });
+
+// 一旦地址发生变化，就要取消上一个地址的所有请求。（当当前地址和之前保存的地址不一样时）
+history.listen(({
+  pathname
+}) => {
+  cancelTokenMap.forEach((value, key) => {
+    console.log(value, key);
+
+    if (value.pathname !== pathname) {
+      value.cancel(CANCEL_REQUEST_MESSAGE);
+      cancelTokenMap.delete(key);
+    }
+  })
+})
 
 // 设置axios拦截器
 // 请求拦截器: 在axios发送请求之前触发的拦截器回调函数
@@ -43,6 +63,15 @@ axiosInstance.interceptors.request.use(
         return prev + `&${key}=${value}`;
       }, '').substring(1);
     }
+
+
+    config.cancelToken = new CancelToken(function (cancel) {
+      // cancel是一个函数，一旦调用就能取消ajax请求
+      cancelTokenMap.set(Symbol(Date.now()), {
+        pathname: history.pathname,
+        cancel
+      })
+    })
 
     // 从redux中读取user数据, 从user中读取token
     const {
@@ -104,6 +133,8 @@ axiosInstance.interceptors.response.use(
         errorMessage = '请检查网络连接';
       } else if (error.message.indexOf('timeout') !== -1) {
         errorMessage = '网络太卡了，请连上wifi重试';
+      } else if (error.message === CANCEL_REQUEST_MESSAGE) {
+        return Promise.reject(CANCEL_REQUEST_MESSAGE);
       } else {
         errorMessage = '未知错误';
       }
