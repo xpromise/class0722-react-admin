@@ -18,7 +18,6 @@ import {
 
 const CancelToken = axios.CancelToken;
 const cancelTokenMap = new Map();
-
 const CANCEL_REQUEST_MESSAGE = 'cancel request';
 
 // axiosInstance就是Axios实例对象，它的用法和axios基本一样
@@ -35,8 +34,6 @@ history.listen(({
   pathname
 }) => {
   cancelTokenMap.forEach((value, key) => {
-    console.log(value, key);
-
     if (value.pathname !== pathname) {
       value.cancel(CANCEL_REQUEST_MESSAGE);
       cancelTokenMap.delete(key);
@@ -72,7 +69,6 @@ axiosInstance.interceptors.request.use(
         cancel
       })
     })
-
     // 从redux中读取user数据, 从user中读取token
     const {
       user: {
@@ -134,6 +130,7 @@ axiosInstance.interceptors.response.use(
       } else if (error.message.indexOf('timeout') !== -1) {
         errorMessage = '网络太卡了，请连上wifi重试';
       } else if (error.message === CANCEL_REQUEST_MESSAGE) {
+        // 取消ajax请求不提示错误~
         return Promise.reject(CANCEL_REQUEST_MESSAGE);
       } else {
         errorMessage = '未知错误';
