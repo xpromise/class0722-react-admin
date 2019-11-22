@@ -88,7 +88,7 @@
 
 - 处理 成功 / 失败
 
-## redux 开发流程
+## 5、redux 开发流程
 
 1. 先定义 action-creators
 
@@ -103,3 +103,49 @@
 4. 通过 connect 高阶组件给 UI 组件传递 redux 数据
 
 5. 组件在使用传递过来的 redux 数据
+
+## 6、登录验证高阶组件
+
+1. 需求：需要进行登录验证，才能访问 home 组件
+2. 分析：所有组件都要进行登录验证，所以统一封装一个高阶组件去复用代码
+3. 思路：
+
+- 如果用户在/login this.props.location.path
+  - 如果用户登录过，去 / redux 中 user 中 token
+  - 如果用户没有登录过，不动
+- 如果用户在非 /login
+  - 如果用户登录过，不动
+  - 如果用户没有登录过，/login
+
+4. 所有组件都要包装 withCheckLogin 组件（这里存在问题，要包好多次）
+
+## 7、验证 token
+
+1. 需求：用户可能在本地 localStorage 中伪造 token
+2. 解决：不用刻意向服务器发送请求验证 token，只需要正常发送请求，一旦在 home 组件发送请求都要 token。一旦 token 出错服务器会返回一个 401 的错误状态码
+3. 思路：
+
+- 统一在响应拦截器中错误回调函数判断状态码是否是 401
+  - 如果是，就要清空本地数据（localStorage、redux）
+    - redux 数据因为不是组件不能使用 connect 方法，只能通过 store.dispatch 更新
+  - 最后跳转到 /login 重新登录
+    - 因为不是组件获取不到路由组件的三大属性，从而不能 history.push。此时需要修改路由的配置
+    - 通过对 react-router-dom 中 BrowserRouter 的源代码查看，BrowserRouter 就是由 react-router 中 Router + 传入 history 属性组成的
+    - 所以需要将 react-router-dom 中 BrowserRouter 改成 react-router 中 Router + 传入 history 属性，此时就能得到 history 属性
+    - 将 history 定义成模块去复用，从而拦截器函数中可以使用了
+
+## 8、完成 BasicLayout 静态组件
+
+- 具体代码参照 antd 中 Menu 组件配置
+
+## 9、LeftNav 功能
+
+- 需求：刷新网页时，要选中当前网址对应的菜单
+  - 需要通过 pathname 得到当前地址（因为组件不是路由组件，所以通过 withRouter 传递三大属性）
+  - 将菜单遍历的 key 设置为 menu.path
+  - 给最外层 Menu 设置 defaultSelectedKeys={[pathname]}
+- 需求：刷新网页时，要展开当前网址对应的一级菜单
+  - 需要通过 pathname 得到当前地址（因为组件不是路由组件，所以通过 withRouter 传递三大属性）
+  - 将菜单遍历的 key 设置为 menu.path
+  - 因为 pathname 和二级菜单的 path 一致，说明是选中了二级菜单，但是要展开的是一级菜单。所以通过遍历查找得到一级菜单的 path
+  - 给最外层 Menu 设置 defaultOpenKeys={[openKey]}
