@@ -7,6 +7,13 @@ import {
 } from 'antd';
 import store from '../redux/store';
 import codeMessage from '../config/code-message';
+import {
+  removeItem
+} from '../utils/storage';
+import history from '../utils/history';
+import {
+  removeUserSuccess
+} from '../redux/action-creators/user'
 
 // axiosInstance就是Axios实例对象，它的用法和axios基本一样
 const axiosInstance = axios.create({
@@ -81,6 +88,16 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       // 说明服务器返回了响应
       errorMessage = codeMessage[error.response.status] || '未知错误';
+
+      if (error.response.status === 401) {
+        // 说明token有问题。 
+        // 清空本地token （localStorage、redux） 重定向到 /login
+        // 一定先清空数据，在跳转
+        removeItem();
+        store.dispatch(removeUserSuccess());
+        history.push('/login');
+      }
+
     } else {
       // 说明服务器没有返回响应，请求还没给服务器 / 还没有接受到服务器的响应 请求就终止了
       if (error.message.indexOf('Network Error') !== -1) {

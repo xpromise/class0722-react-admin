@@ -26,8 +26,10 @@ const withCheckLogin = WrappedComponent => {
 
             location/history/match是路由组件的三大属性，其他组件默认没有
             路由组件指通过Route加载的组件
-        */
 
+            render方法中用Redirect跳转地址
+            render方法外其他函数用history跳转地址
+        */
         const {
           token,
           location,
