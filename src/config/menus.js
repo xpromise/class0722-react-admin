@@ -25,7 +25,7 @@ export default [{
     path: '/user'
   },
   {
-    title: 'home',
+    title: 'role',
     icon: 'safety',
     path: '/role'
   },

@@ -160,9 +160,13 @@
 
   - 定义 i18n.js 国际化配置文件 https://github.com/i18next/react-i18next/blob/master/example/react/src/i18n.js
   - 在 index.js 入口文件引入使用
-  - 定义语言包 public/locales/en/translation.json public/locales/zh/translation.json public/locales/zh-CN/translation.json
+  - 定义语言包
+    - public/locales/en/translation.json
+    - public/locales/zh/translation.json
+    - public/locales/zh-CN/translation.json
 
 - 使用：
+
   - useTranslation react hooks 用法
   - withTranslation 高阶组件用法（给组件传递 t、i18n）
     - t 用来切换显示（根据当前语言环境，选择使用哪个语言包加载）
@@ -170,3 +174,6 @@
       - changeLanguage() 用来切换语言
       - language 用来获取当前语言
   - Trans 组件用法
+
+- menus 菜单需要重复创建
+  - 因为点击切换语言时，重新渲染组件，如果菜单没有重新创建，就不会切换语言
