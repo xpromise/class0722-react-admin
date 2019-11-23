@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { Menu, Icon } from "antd";
 /*
   需求：给非路由组件传递路由组件的三大属性
@@ -15,6 +16,10 @@ const { SubMenu } = Menu;
 
 @withRouter
 class LeftNav extends Component {
+  static propTypes = {
+    isDisplay: PropTypes.bool.isRequired
+  };
+
   state = {
     menus: []
   };
@@ -78,7 +83,9 @@ class LeftNav extends Component {
       <div>
         <div className="layout-logo">
           <img src={logo} alt="logo" />
-          <h1>硅谷后台</h1>
+          <h1 style={{ display: this.props.isDisplay ? "block" : "none" }}>
+            硅谷后台
+          </h1>
         </div>
         <Menu
           theme="dark"
