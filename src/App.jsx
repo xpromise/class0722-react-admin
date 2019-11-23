@@ -11,7 +11,7 @@ export default class App extends Component {
   render() {
     return (
       // Suspense用于懒加载：等待内部元素加载完才显示，没加载完就显示fallback的值
-      <Suspense fallback={<Spin size="large" className="lazy-loading"/>}>
+      <Suspense fallback={<Spin size="large" className="lazy-loading" />}>
         <Router history={history}>
           <Switch>
             {noAuthRoutes.map((route, index) => {

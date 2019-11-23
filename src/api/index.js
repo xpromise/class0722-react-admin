@@ -12,3 +12,9 @@ export const reqLogin = (username, password) => axiosInstance({
     password
   }
 })
+
+// 请求分类列表数据
+export const reqGetCategories = () => axiosInstance({
+  method: 'GET',
+  url: '/category/get',
+})
