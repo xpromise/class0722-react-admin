@@ -46,3 +46,13 @@ export const reqDelCategory = (categoryId) => axiosInstance({
     categoryId
   }
 })
+
+// 请求获取商品列表数据
+export const reqGetProducts = (pageNum, pageSize) => axiosInstance({
+  method: 'GET',
+  url: '/product/list',
+  params: {
+    pageNum,
+    pageSize
+  }
+})
