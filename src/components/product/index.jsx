@@ -58,6 +58,10 @@ export default class Product extends Component {
     });
   };
 
+  showAddCategoryForm = () => {
+    this.props.history.push('/product/add');
+  }
+
   componentDidMount() {
     this.getProducts(1, 3);
   }
@@ -78,7 +82,7 @@ export default class Product extends Component {
           </div>
         }
         extra={
-          <Button type="primary">
+          <Button type="primary" onClick={this.showAddCategoryForm}>
             <Icon type="plus" />
             添加商品
           </Button>
