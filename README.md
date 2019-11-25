@@ -152,7 +152,7 @@
   - 因为 pathname 和二级菜单的 path 一致，说明是选中了二级菜单，但是要展开的是一级菜单。所以通过遍历查找得到一级菜单的 path
   - 给最外层 Menu 设置 defaultOpenKeys={[openKey]}
 
-## 国际化功能
+## 10、国际化功能
 
 - react-i18next https://github.com/i18next/react-i18next/
 
@@ -177,3 +177,25 @@
 
 - menus 菜单需要重复创建
   - 因为点击切换语言时，重新渲染组件，如果菜单没有重新创建，就不会切换语言
+
+## 11、添加商品
+
+1. 分类数据动态展示
+
+- 需求：需要获取分类数据（如果之前获取过，就不要获取了）
+- 解决：1. 先判断有没有，如果没有在获取 2. 只要请求一次即可
+  ```
+  componentDidMount() {
+    if (!this.props.categories.length) {
+      // 发送请求，请求分类数据
+      this.props.getCategoriesAsync();
+    }
+  }
+  ```
+- 注意：addProductForm 要修改，同时 Category 组件也要修改
+
+2. 富文本编辑器
+
+- 在 antd 社区精选组件上查看 https://ant.design/docs/react/recommendation-cn
+- 使用 braft-editor 组件开发富文本编辑器
+- 具体使用看文档 https://www.yuque.com/braft-editor/be/lzwpnr
