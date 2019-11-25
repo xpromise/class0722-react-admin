@@ -11,26 +11,13 @@ import {
   DEL_CATEGORY_SUCCESS
 } from '../action-types/category'
 
+// 获取分类数据的action-creator
+// 同步
 const getCategoriesSuccess = (categories) => ({
   type: GET_CATEGORIES_SUCCESS,
   data: categories
 })
-
-const addCategorySuccess = (category) => ({
-  type: ADD_CATEGORY_SUCCESS,
-  data: category
-})
-
-const updateCategorySuccess = (category) => ({
-  type: UPDATE_CATEGORY_SUCCESS,
-  data: category
-})
-
-const delCategorySuccess = (categoryId) => ({
-  type: DEL_CATEGORY_SUCCESS,
-  data: categoryId
-})
-
+// 异步
 export const getCategoriesAsync = () => {
   return (dispatch) => {
     return reqGetCategories()
@@ -40,6 +27,13 @@ export const getCategoriesAsync = () => {
   }
 }
 
+// 添加分类数据的action-creator
+// 同步
+const addCategorySuccess = (category) => ({
+  type: ADD_CATEGORY_SUCCESS,
+  data: category
+})
+// 异步
 export const addCategoryAsync = (categoryName) => {
   return (dispatch) => {
     return reqAddCategory(categoryName)
@@ -49,6 +43,13 @@ export const addCategoryAsync = (categoryName) => {
   }
 }
 
+// 更新分类数据的action-creator
+// 同步
+const updateCategorySuccess = (category) => ({
+  type: UPDATE_CATEGORY_SUCCESS,
+  data: category
+})
+// 异步
 export const updateCategoryAsync = (categoryId, categoryName) => {
   return (dispatch) => {
     return reqUpdateCategory(categoryId, categoryName)
@@ -58,6 +59,13 @@ export const updateCategoryAsync = (categoryId, categoryName) => {
   }
 }
 
+// 删除分类数据的action-creator
+// 同步
+const delCategorySuccess = (categoryId) => ({
+  type: DEL_CATEGORY_SUCCESS,
+  data: categoryId
+})
+// 异步
 export const delCategoryAsync = (categoryId) => {
   return (dispatch) => {
     return reqDelCategory(categoryId)
