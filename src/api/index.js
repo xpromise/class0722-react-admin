@@ -37,3 +37,12 @@ export const reqUpdateCategory = (categoryId, categoryName) => axiosInstance({
     categoryName
   }
 })
+
+// 请求删除分类数据
+export const reqDelCategory = (categoryId) => axiosInstance({
+  method: 'POST',
+  url: '/category/delete',
+  data: {
+    categoryId
+  }
+})

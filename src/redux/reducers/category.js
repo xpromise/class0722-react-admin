@@ -1,7 +1,8 @@
 import {
   GET_CATEGORIES_SUCCESS,
   ADD_CATEGORY_SUCCESS,
-  UPDATE_CATEGORY_SUCCESS
+  UPDATE_CATEGORY_SUCCESS,
+  DEL_CATEGORY_SUCCESS
 } from '../action-types/category'
 
 const initState = [];
@@ -21,6 +22,8 @@ function categories(prevState = initState, action) {
         // 如果没有匹配上，就返回原数据
         return category;
       })
+    case DEL_CATEGORY_SUCCESS:
+      return prevState.filter((category) => category._id !== action.data)
     default:
       return prevState
   }

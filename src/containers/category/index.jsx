@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import {
   getCategoriesAsync,
   addCategoryAsync,
-  updateCategoryAsync
+  updateCategoryAsync,
+  delCategoryAsync
 } from "../../redux/action-creators/category";
 
 import AddCategoryForm from "./add-category-form";
@@ -13,7 +14,8 @@ import UpdateCategoryForm from "./update-category-form";
 @connect(state => ({ categories: state.categories }), {
   getCategoriesAsync,
   addCategoryAsync,
-  updateCategoryAsync
+  updateCategoryAsync,
+  delCategoryAsync
 })
 class Category extends Component {
   state = {
@@ -42,7 +44,9 @@ class Category extends Component {
             <Button type="link" onClick={this.showUpdateCategory(category)}>
               修改分类
             </Button>
-            <Button type="link">删除分类</Button>
+            <Button type="link" onClick={this.delCategory(category)}>
+              删除分类
+            </Button>
           </div>
         );
       }
@@ -93,6 +97,25 @@ class Category extends Component {
       this.setState({
         updateCategoryVisible: true,
         category
+      });
+    };
+  };
+
+  delCategory = category => {
+    return () => {
+      Modal.confirm({
+        title: (
+          <span>
+            您确认要删除
+            <span style={{ color: "red", fontWeight: "bold" }}>
+              {category.name}
+            </span>
+            分类数据吗？
+          </span>
+        ),
+        onOk: () => {
+          this.props.delCategoryAsync(category._id);
+        }
       });
     };
   };

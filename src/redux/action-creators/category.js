@@ -1,12 +1,14 @@
 import {
   reqGetCategories,
   reqAddCategory,
-  reqUpdateCategory
+  reqUpdateCategory,
+  reqDelCategory
 } from '../../api';
 import {
   GET_CATEGORIES_SUCCESS,
   ADD_CATEGORY_SUCCESS,
-  UPDATE_CATEGORY_SUCCESS
+  UPDATE_CATEGORY_SUCCESS,
+  DEL_CATEGORY_SUCCESS
 } from '../action-types/category'
 
 const getCategoriesSuccess = (categories) => ({
@@ -22,6 +24,11 @@ const addCategorySuccess = (category) => ({
 const updateCategorySuccess = (category) => ({
   type: UPDATE_CATEGORY_SUCCESS,
   data: category
+})
+
+const delCategorySuccess = (categoryId) => ({
+  type: DEL_CATEGORY_SUCCESS,
+  data: categoryId
 })
 
 export const getCategoriesAsync = () => {
@@ -47,6 +54,15 @@ export const updateCategoryAsync = (categoryId, categoryName) => {
     return reqUpdateCategory(categoryId, categoryName)
       .then((response) => {
         dispatch(updateCategorySuccess(response));
+      })
+  }
+}
+
+export const delCategoryAsync = (categoryId) => {
+  return (dispatch) => {
+    return reqDelCategory(categoryId)
+      .then((response) => {
+        dispatch(delCategorySuccess(response));
       })
   }
 }
