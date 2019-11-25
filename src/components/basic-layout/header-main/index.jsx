@@ -38,7 +38,7 @@ class HeaderMain extends Component {
     isFullscreen: false,
     isEnglish: this.props.i18n.language === "en" ? true : false,
     title: "",
-    pathname: "",
+    pathname: "", // 存储上一次pathname
     // date: this.formatDate(Date.now())
     date: dayjs().format("YYYY/MM/DD HH:mm:ss")
   };

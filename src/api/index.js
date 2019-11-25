@@ -18,3 +18,12 @@ export const reqGetCategories = () => axiosInstance({
   method: 'GET',
   url: '/category/get',
 })
+
+// 请求添加分类数据
+export const reqAddCategory = (categoryName) => axiosInstance({
+  method: 'POST',
+  url: '/category/add',
+  data: {
+    categoryName
+  }
+})
