@@ -27,3 +27,13 @@ export const reqAddCategory = (categoryName) => axiosInstance({
     categoryName
   }
 })
+
+// 请求修改分类数据
+export const reqUpdateCategory = (categoryId, categoryName) => axiosInstance({
+  method: 'POST',
+  url: '/category/update',
+  data: {
+    categoryId,
+    categoryName
+  }
+})

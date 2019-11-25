@@ -3,18 +3,23 @@ import { Card, Table, Button, Icon, Modal } from "antd";
 import { connect } from "react-redux";
 import {
   getCategoriesAsync,
-  addCategoryAsync
+  addCategoryAsync,
+  updateCategoryAsync
 } from "../../redux/action-creators/category";
 
 import AddCategoryForm from "./add-category-form";
+import UpdateCategoryForm from "./update-category-form";
 
 @connect(state => ({ categories: state.categories }), {
   getCategoriesAsync,
-  addCategoryAsync
+  addCategoryAsync,
+  updateCategoryAsync
 })
 class Category extends Component {
   state = {
-    addCategoryVisible: false
+    addCategoryVisible: false,
+    updateCategoryVisible: false,
+    category: {} // 点击选中的某个分类数据
   };
 
   componentDidMount() {
@@ -31,10 +36,12 @@ class Category extends Component {
       title: "操作",
       // className: "column-money", // 给列添加类名
       // dataIndex: "money",
-      render: () => {
+      render: category => {
         return (
           <div>
-            <Button type="link">修改分类</Button>
+            <Button type="link" onClick={this.showUpdateCategory(category)}>
+              修改分类
+            </Button>
             <Button type="link">删除分类</Button>
           </div>
         );
@@ -51,19 +58,43 @@ class Category extends Component {
         // 方法返回值看action-creators里面函数(dispatch)的返回值
         await this.props.addCategoryAsync(categoryName);
         // 添加分类完成，才隐藏对话框
-        this.hidden();
+        this.hidden("addCategory")();
       }
     });
   };
 
-  hidden = () => {
-    // 清空表单数据
-    this.setState({
-      addCategoryVisible: false
+  updateCategory = () => {
+    this.updateCategoryForm.props.form.validateFields(async (err, values) => {
+      if (!err) {
+        const { categoryName } = values;
+        const categoryId = this.state.category._id;
+
+        await this.props.updateCategoryAsync(categoryId, categoryName);
+        this.hidden("updateCategory")();
+      }
     });
-    setTimeout(() => {
-      this.addCategoryForm.props.form.resetFields();
-    }, 500);
+  };
+
+  hidden = name => {
+    return () => {
+      // 清空表单数据
+      this.setState({
+        [name + "Visible"]: false
+      });
+      setTimeout(() => {
+        this[name + "Form"].props.form.resetFields();
+      }, 500);
+    };
+  };
+
+  showUpdateCategory = category => {
+    return () => {
+      // console.log(category);
+      this.setState({
+        updateCategoryVisible: true,
+        category
+      });
+    };
   };
 
   show = () => {
@@ -74,7 +105,7 @@ class Category extends Component {
 
   render() {
     const { categories } = this.props;
-    const { addCategoryVisible } = this.state;
+    const { addCategoryVisible, updateCategoryVisible, category } = this.state;
 
     return (
       <div>
@@ -105,11 +136,24 @@ class Category extends Component {
           title="添加分类"
           visible={addCategoryVisible}
           onOk={this.addCategory}
-          onCancel={this.hidden}
+          onCancel={this.hidden("addCategory")}
           width={300}
         >
           <AddCategoryForm
             wrappedComponentRef={form => (this.addCategoryForm = form)}
+          />
+        </Modal>
+
+        <Modal
+          title="修改分类"
+          visible={updateCategoryVisible}
+          onOk={this.updateCategory}
+          onCancel={this.hidden("updateCategory")}
+          width={300}
+        >
+          <UpdateCategoryForm
+            categoryName={category.name}
+            wrappedComponentRef={form => (this.updateCategoryForm = form)}
           />
         </Modal>
       </div>

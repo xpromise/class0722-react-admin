@@ -1,6 +1,7 @@
 import {
   GET_CATEGORIES_SUCCESS,
-  ADD_CATEGORY_SUCCESS
+  ADD_CATEGORY_SUCCESS,
+  UPDATE_CATEGORY_SUCCESS
 } from '../action-types/category'
 
 const initState = [];
@@ -11,6 +12,15 @@ function categories(prevState = initState, action) {
       return action.data;
     case ADD_CATEGORY_SUCCESS:
       return [...prevState, action.data]
+    case UPDATE_CATEGORY_SUCCESS:
+      return prevState.map((category) => {
+        if (category._id === action.data._id) {
+          // 如果id匹配上，就返回修改后的数据
+          return action.data
+        }
+        // 如果没有匹配上，就返回原数据
+        return category;
+      })
     default:
       return prevState
   }
