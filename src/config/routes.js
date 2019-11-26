@@ -4,6 +4,7 @@ import NotMatch from '../components/not-match';
 import Category from '../containers/category';
 import Product from '../components/product';
 import ProductForm from '../components/product/product-form';
+import ProductDetail from '../components/product/product-detail';
 
 // 需要进行权限校验
 const authRoutes = [{
@@ -29,6 +30,11 @@ const authRoutes = [{
   {
     path: '/product/update/:id',
     component: ProductForm,
+    exact: true
+  },
+  {
+    path: '/product/:id',
+    component: ProductDetail,
     exact: true
   },
   {

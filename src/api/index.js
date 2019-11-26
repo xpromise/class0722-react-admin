@@ -106,3 +106,12 @@ export const reqUpdateProduct = ({
     productId
   }
 })
+
+export const reqUpdateProductStatus = (productId, status) => axiosInstance({
+  method: 'POST',
+  url: '/product/update/status',
+  data: {
+    productId,
+    status
+  }
+})

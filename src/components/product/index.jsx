@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Card, Table, Select, Input, Button, Icon } from "antd";
+import { Card, Table, Select, Input, Button, Icon, message } from "antd";
 
-import { reqGetProducts } from "../../api";
+import { reqGetProducts, reqUpdateProductStatus } from "../../api";
 
 import "./index.less";
 
@@ -26,22 +26,27 @@ export default class Product extends Component {
     },
     {
       title: "状态",
-      dataIndex: "status",
-      render: () => {
+      // dataIndex: "status", // 当你设置dataIndex，render方法得到一个值
+      render: product => {
+        const status = product.status;
         return (
           <div>
-            <Button type="primary">上架</Button>
-            已下架
+            <Button type="primary" onClick={this.updateProductStatus(product)}>
+              {status === 1 ? "上架" : "下架"}
+            </Button>
+            {status === 1 ? "已下架" : "已上架"}
           </div>
         );
       }
     },
     {
-      title: "操作",
+      title: "操作", // 如果没有设置dataIndex，render方法得到整个对象
       render: product => {
         return (
           <div>
-            <Button type="link">详情</Button>
+            <Button type="link" onClick={this.showProductDetail(product)}>
+              详情
+            </Button>
             <Button type="link" onClick={this.showUpdateProductForm(product)}>
               修改
             </Button>
@@ -50,6 +55,25 @@ export default class Product extends Component {
       }
     }
   ];
+  // 更新商品状态
+  updateProductStatus = product => {
+    return () => {
+      const productId = product._id;
+      const status = 3 - product.status;
+      reqUpdateProductStatus(productId, status).then(res => {
+        message.success("更新商品状态成功");
+        // 更新前端数据
+        this.setState({
+          products: this.state.products.map(product => {
+            if (product._id === productId) {
+              return { ...product, status };
+            }
+            return product;
+          })
+        });
+      });
+    };
+  };
 
   // 获取商品
   getProducts = async (pageNum, pageSize) => {
@@ -58,6 +82,12 @@ export default class Product extends Component {
       products: result.list,
       total: result.total
     });
+  };
+
+  showProductDetail = product => {
+    return () => {
+      this.props.history.push("/product/" + product._id, product);
+    };
   };
 
   showAddCategoryForm = () => {
