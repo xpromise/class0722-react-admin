@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { connect } from "react-redux";
 import { getCategoriesAsync } from "../../../redux/action-creators/category";
-import { reqAddProduct } from "../../../api";
+import { reqAddProduct, reqGetProduct, reqUpdateProduct } from "../../../api";
 // 引入编辑器组件
 import BraftEditor from "braft-editor";
 // 引入编辑器样式
@@ -20,16 +20,22 @@ import "./index.less";
 
 @Form.create()
 @connect(state => ({ categories: state.categories }), { getCategoriesAsync })
-class AddProductForm extends Component {
+class ProductForm extends Component {
   state = {
-    // 创建一个空的editorState作为初始值
-    editorState: BraftEditor.createEditorState(null)
+    product: null
   };
 
   componentDidMount() {
     if (!this.props.categories.length) {
       // 发送请求，请求分类数据
       this.props.getCategoriesAsync();
+    }
+    if (!this.props.location.state) {
+      reqGetProduct(this.props.match.params.id).then(res => {
+        this.setState({
+          product: res
+        });
+      });
     }
   }
 
@@ -52,10 +58,27 @@ class AddProductForm extends Component {
       if (!err) {
         const { name, desc, price, categoryId, editorState } = values;
         const detail = editorState.toHTML();
-        // 发送请求添加商品
-        await reqAddProduct({ name, desc, price, categoryId, detail });
+
+        let content = "添加";
+        const { pathname, state } = this.props.location;
+        if (pathname.startsWith("/product/update/")) {
+          const productId = state ? state._id : this.state.product._id;
+          await reqUpdateProduct({
+            name,
+            desc,
+            price,
+            categoryId,
+            detail,
+            productId
+          });
+          content = "更新";
+        } else {
+          // 发送请求添加商品
+          await reqAddProduct({ name, desc, price, categoryId, detail });
+        }
+
         // 跳转到商品列表页面，提示添加成功
-        message.success("添加商品成功~");
+        message.success(content + "商品成功~");
         this.props.history.push("/product");
       }
     });
@@ -68,8 +91,17 @@ class AddProductForm extends Component {
   render() {
     const {
       categories,
-      form: { getFieldDecorator }
+      form: { getFieldDecorator },
+      location: { pathname, state }
     } = this.props;
+
+    let product = null;
+
+    // 判断添加商品还是修改商品
+    if (pathname.startsWith("/product/update/")) {
+      // 是更新商品
+      product = state || this.state.product;
+    }
 
     return (
       <Card
@@ -87,17 +119,20 @@ class AddProductForm extends Component {
         >
           <Form.Item label="商品名称">
             {getFieldDecorator("name", {
-              rules: [{ required: true, message: "请输入商品名称" }]
+              rules: [{ required: true, message: "请输入商品名称" }],
+              initialValue: product ? product.name : ""
             })(<Input placeholder="请输入商品名称" />)}
           </Form.Item>
           <Form.Item label="商品描述">
             {getFieldDecorator("desc", {
-              rules: [{ required: true, message: "请输入商品描述" }]
+              rules: [{ required: true, message: "请输入商品描述" }],
+              initialValue: product ? product.desc : ""
             })(<Input placeholder="请输入商品描述" />)}
           </Form.Item>
           <Form.Item label="商品分类">
             {getFieldDecorator("categoryId", {
-              rules: [{ required: true, message: "请选择商品分类" }]
+              rules: [{ required: true, message: "请选择商品分类" }],
+              initialValue: product ? product.categoryId : ""
             })(
               <Select placeholder="请选择商品分类">
                 {categories.map(category => (
@@ -110,7 +145,8 @@ class AddProductForm extends Component {
           </Form.Item>
           <Form.Item label="商品价格">
             {getFieldDecorator("price", {
-              rules: [{ required: true, message: "请输入商品价格" }]
+              rules: [{ required: true, message: "请输入商品价格" }],
+              initialValue: product ? product.price : ""
             })(
               <InputNumber
                 style={{ width: 150 }}
@@ -130,13 +166,14 @@ class AddProductForm extends Component {
                   required: true,
                   validator: this.validator
                 }
-              ]
+              ],
+              // initValue如果设置多次有效值，第一次生效，后面的没用
+              initialValue: product
+                ? BraftEditor.createEditorState(product.detail)
+                : ""
             })(
               <BraftEditor
                 className="rich-text-editor"
-                // controls={controls}
-                // value={editorState}
-                // onChange={this.handleEditorChange}
                 placeholder="请输入商品详情"
               />
             )}
@@ -152,4 +189,4 @@ class AddProductForm extends Component {
   }
 }
 
-export default AddProductForm;
+export default ProductForm;

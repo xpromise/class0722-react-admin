@@ -3,7 +3,7 @@ import Login from '../containers/login';
 import NotMatch from '../components/not-match';
 import Category from '../containers/category';
 import Product from '../components/product';
-import AddProductForm from '../components/product/add-product-form';
+import ProductForm from '../components/product/product-form';
 
 // 需要进行权限校验
 const authRoutes = [{
@@ -23,7 +23,12 @@ const authRoutes = [{
   },
   {
     path: '/product/add',
-    component: AddProductForm,
+    component: ProductForm,
+    exact: true
+  },
+  {
+    path: '/product/update/:id',
+    component: ProductForm,
     exact: true
   },
   {

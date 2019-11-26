@@ -75,3 +75,34 @@ export const reqAddProduct = ({
     detail
   }
 })
+
+// 请求获取单个商品数据
+export const reqGetProduct = (productId) => axiosInstance({
+  method: 'GET',
+  url: '/product/get',
+  params: {
+    productId
+  }
+})
+
+
+// 请求修改商品数据
+export const reqUpdateProduct = ({
+  name,
+  desc,
+  categoryId,
+  price,
+  detail,
+  productId
+}) => axiosInstance({
+  method: 'POST',
+  url: '/product/update',
+  data: {
+    name,
+    desc,
+    categoryId,
+    price,
+    detail,
+    productId
+  }
+})

@@ -38,11 +38,13 @@ export default class Product extends Component {
     },
     {
       title: "操作",
-      render: () => {
+      render: product => {
         return (
           <div>
             <Button type="link">详情</Button>
-            <Button type="link">修改</Button>
+            <Button type="link" onClick={this.showUpdateProductForm(product)}>
+              修改
+            </Button>
           </div>
         );
       }
@@ -59,8 +61,16 @@ export default class Product extends Component {
   };
 
   showAddCategoryForm = () => {
-    this.props.history.push('/product/add');
-  }
+    this.props.history.push("/product/add");
+  };
+
+  showUpdateProductForm = product => {
+    return () => {
+      // 地址后面加上id --> 为了在更新商品页面刷新时能够获取到商品id --> 通过id发送请求获取商品数据
+      // 第二个参数传入product，组件就能通过location.state获取
+      this.props.history.push("/product/update/" + product._id, product);
+    };
+  };
 
   componentDidMount() {
     this.getProducts(1, 3);
