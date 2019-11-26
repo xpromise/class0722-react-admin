@@ -22,6 +22,8 @@ import "./index.less";
 @connect(state => ({ categories: state.categories }), { getCategoriesAsync })
 class ProductForm extends Component {
   state = {
+    // 初始化为null，保证没有数据的时候
+    // 不会进入BraftEditor.createEditorState(product.detail)初始化一个空P标签
     product: null
   };
 
@@ -39,11 +41,9 @@ class ProductForm extends Component {
     }
   }
 
-  handleEditorChange = editorState => {
-    this.setState({ editorState });
-  };
-
   validator = (rule, value, callback) => {
+    // 如果数据为空也要报错
+    // 如果有数据，数据是editorState。需要调用它的isEmpty方法来判断是否为空
     if (!value || value.isEmpty()) {
       callback("请输入商品详情");
     } else {
@@ -53,7 +53,7 @@ class ProductForm extends Component {
 
   addProduct = e => {
     e.preventDefault();
-
+    // 校验表单收集数据
     this.props.form.validateFields(async (err, values) => {
       if (!err) {
         const { name, desc, price, categoryId, editorState } = values;
@@ -61,7 +61,9 @@ class ProductForm extends Component {
 
         let content = "添加";
         const { pathname, state } = this.props.location;
+        // 判断是添加/更新商品
         if (pathname.startsWith("/product/update/")) {
+          // 因为productId可能来自state（由点击修改按钮传递过来的）也可能来自于发送请求请求来的product
           const productId = state ? state._id : this.state.product._id;
           await reqUpdateProduct({
             name,
@@ -76,14 +78,15 @@ class ProductForm extends Component {
           // 发送请求添加商品
           await reqAddProduct({ name, desc, price, categoryId, detail });
         }
-
-        // 跳转到商品列表页面，提示添加成功
+        // 跳转到商品列表页面，提示成功
         message.success(content + "商品成功~");
+        // 一般先把当前页面的事全部干完，在跳转到其他地址
         this.props.history.push("/product");
       }
     });
   };
 
+  // 回退按钮回调函数
   goBack = () => {
     this.props.history.goBack();
   };
@@ -95,11 +98,13 @@ class ProductForm extends Component {
       location: { pathname, state }
     } = this.props;
 
+    // 初始化为null保证添加商品时不会初始化数据
+    // 更新商品product的值就不为空了
     let product = null;
-
     // 判断添加商品还是修改商品
     if (pathname.startsWith("/product/update/")) {
       // 是更新商品
+      // 因为productId可能来自state（由点击修改按钮传递过来的）也可能来自于发送请求请求来的product
       product = state || this.state.product;
     }
 
@@ -154,7 +159,6 @@ class ProductForm extends Component {
                   `￥ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
                 parser={value => value.replace(/\￥\s?|(,*)/g, "")}
-                // onChange={onChange}
               />
             )}
           </Form.Item>
