@@ -39,7 +39,13 @@ axiosInstance.interceptors.request.use(
           { key1: value1, key2: value2 } ---> 'key1=value1&key2=value2'
       */
       config.data = Object.keys(config.data).reduce((prev, key) => {
-        const value = config.data[key];
+        let value = config.data[key];
+        // 检测数据类型
+        const type = Object.prototype.toString.call(value).slice(8, -1);
+        if (type === 'Object' || type === 'Array') {
+          // 如果是对象/数组  要转换成JSON数据
+          value = JSON.stringify(value);
+        }
         return prev + `&${key}=${value}`;
       }, '').substring(1);
     }

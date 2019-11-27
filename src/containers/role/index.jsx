@@ -1,21 +1,28 @@
 import React, { Component } from "react";
-import { Card, Button, Table, Radio, Modal } from "antd";
+import { Card, Button, Table, Radio, Modal, message } from "antd";
 import { connect } from "react-redux";
 import dayjs from "dayjs";
 
-import { getRolesAsync } from "../../redux/action-creators/role";
+import {
+  getRolesAsync,
+  addRoleAsync,
+  updateRoleAsync
+} from "../../redux/action-creators/role";
 import AddRoleForm from "./add-role-form";
 import UpdateRoleForm from "./update-role-form";
 
 const RadioGroup = Radio.Group;
 
-@connect(state => ({ roles: state.roles }), { getRolesAsync })
+@connect(
+  state => ({ roles: state.roles, username: state.user.user.username }),
+  { getRolesAsync, addRoleAsync, updateRoleAsync }
+)
 class Role extends Component {
   state = {
     value: "", //单选的默认值，也就是选中的某个角色的id值
     addRoleModalVisible: false, //是否展示创建角色的标识
     updateRoleModalVisible: false, //是否展示设置角色的标识
-    isDisabled: false
+    isDisabled: true
   };
 
   componentDidMount() {
@@ -52,7 +59,8 @@ class Role extends Component {
   onRadioChange = e => {
     console.log("radio checked", e.target.value);
     this.setState({
-      value: e.target.value
+      value: e.target.value,
+      isDisabled: false
     });
   };
 
@@ -63,9 +71,42 @@ class Role extends Component {
   };
 
   //创建角色的回调函数
-  addRole = () => {};
+  addRole = () => {
+    const form = this.addRoleForm.props.form;
+    form.validateFields(async (err, values) => {
+      if (!err) {
+        const { name } = values;
+        await this.props.addRoleAsync(name);
+        message.success("添加角色成功~");
+        // 清空表单
+        form.resetFields();
+        // 隐藏对话框
+        this.setState({
+          addRoleModalVisible: false
+        });
+      }
+    });
+  };
   //设置角色权限的回调函数
-  updateRole = () => {};
+  updateRole = () => {
+    const form = this.updateRoleForm.props.form;
+    form.validateFields(async (err, values) => {
+      if (!err) {
+        // console.log(values);
+        const { menus } = values;
+        const roleId = this.state.value;
+        const authName = this.props.username;
+        await this.props.updateRoleAsync({ roleId, menus, authName });
+        message.success("更新角色成功~");
+        // 清空表单
+        form.resetFields();
+        // 隐藏对话框
+        this.setState({
+          updateRoleModalVisible: false
+        });
+      }
+    });
+  };
 
   render() {
     const {
@@ -76,6 +117,8 @@ class Role extends Component {
     } = this.state;
 
     const { roles } = this.props;
+
+    const role = roles.find(role => role._id === value);
 
     return (
       <Card
@@ -136,6 +179,7 @@ class Role extends Component {
         >
           <UpdateRoleForm
             wrappedComponentRef={form => (this.updateRoleForm = form)}
+            role={role}
           />
         </Modal>
       </Card>

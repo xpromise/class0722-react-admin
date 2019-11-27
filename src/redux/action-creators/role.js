@@ -1,8 +1,12 @@
 import {
-  GET_ROLES_SUCCESS
+  GET_ROLES_SUCCESS,
+  ADD_ROLE_SUCCESS,
+  UPDATE_ROLE_SUCCESS
 } from '../action-types/role'
 import {
-  reqGetRoles
+  reqGetRoles,
+  reqAddRole,
+  reqUpdateRole
 } from '../../api'
 
 const getRolesSuccess = (roles) => ({
@@ -18,3 +22,33 @@ export const getRolesAsync = () => {
       })
   }
 }
+
+
+const addRoleSuccess = (role) => ({
+  type: ADD_ROLE_SUCCESS,
+  data: role
+})
+
+export const addRoleAsync = (name) => {
+  return (dispatch) => {
+    return reqAddRole(name)
+      .then((res) => {
+        dispatch(addRoleSuccess(res))
+      })
+  }
+}
+
+const updateRoleSuccess = (role) => ({
+  type: UPDATE_ROLE_SUCCESS,
+  data: role
+})
+
+export const updateRoleAsync = ({roleId, menus, authName}) => {
+  return (dispatch) => {
+    return reqUpdateRole({roleId, menus, authName})
+      .then((res) => {
+        dispatch(updateRoleSuccess(res))
+      })
+  }
+}
+

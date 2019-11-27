@@ -116,17 +116,44 @@ export const reqUpdateProductStatus = (productId, status) => axiosInstance({
   }
 })
 
-export const reqSearchProducts = ({searchType, searchValue, pageNum, pageSize}) => axiosInstance({
+export const reqSearchProducts = ({
+  searchType,
+  searchValue,
+  pageNum,
+  pageSize
+}) => axiosInstance({
   method: 'GET',
   url: '/product/search',
   params: {
     pageSize,
     pageNum,
-    [searchType]: searchValue  // productName: 'aaa'
+    [searchType]: searchValue // productName: 'aaa'
   }
 })
 
 export const reqGetRoles = () => axiosInstance({
   method: 'GET',
   url: '/role/get',
+})
+
+export const reqAddRole = (name) => axiosInstance({
+  method: 'POST',
+  url: '/role/add',
+  data: {
+    name
+  }
+})
+
+export const reqUpdateRole = ({
+  roleId,
+  menus,
+  authName
+}) => axiosInstance({
+  method: 'POST',
+  url: '/role/update',
+  data: {
+    roleId,
+    menus,
+    authName
+  }
 })
