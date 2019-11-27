@@ -1,15 +1,26 @@
 import React, { Component } from "react";
 import { Card, Table, Select, Input, Button, Icon, message } from "antd";
 
-import { reqGetProducts, reqUpdateProductStatus } from "../../api";
+import {
+  reqGetProducts,
+  reqUpdateProductStatus,
+  reqSearchProducts
+} from "../../api";
 
 import "./index.less";
 
 export default class Product extends Component {
   state = {
     products: [],
-    total: 0
+    total: 0,
+    searchType: "productName",
+    searchValue: "",
+    current: 1,
+    pageSize: 3
   };
+
+  isSearch = false; // 是否点击过搜索按钮
+  currentSearchValue = ""; // 点击搜索按钮时缓存的搜索关键字
 
   columns = [
     {
@@ -75,12 +86,40 @@ export default class Product extends Component {
     };
   };
 
+  /*
+    1. 什么情况搜索商品，什么情况全部商品
+      - 看是否有searchValue
+    2. 如果在第二页，点击搜索，显示的是第一页数据
+      - 原因：搜索传递的参数固定是 1 3 --> 永远搜的是第一页 3条数据
+      - 解决：将 current当前页数 受控起来
+    3. 输入iphone，没有点击搜索按钮。 不按照关键字去搜，而搜全部商品（一定要点击搜索按钮，才按照关键字去搜）  
+      问题二：第一次输入内容1，点击搜索。 第二次输入内容2，没有点击搜索。 搜索关键字是内容1还是内容2
+      总结：必须点击搜索按钮才能搜索
+  */
   // 获取商品
   getProducts = async (pageNum, pageSize) => {
-    const result = await reqGetProducts(pageNum, pageSize);
+    const { searchType } = this.state;
+
+    let result = null;
+
+    if (this.isSearch) {
+      // 搜索商品
+      result = await reqSearchProducts({
+        searchType,
+        searchValue: this.currentSearchValue,
+        pageNum,
+        pageSize
+      });
+    } else {
+      // 全部商品
+      result = await reqGetProducts(pageNum, pageSize);
+    }
+
     this.setState({
       products: result.list,
-      total: result.total
+      total: result.total,
+      current: pageNum,
+      pageSize
     });
   };
 
@@ -102,23 +141,52 @@ export default class Product extends Component {
     };
   };
 
+  selectChange = value => {
+    this.setState({
+      searchType: value
+    });
+  };
+
+  inputChange = e => {
+    this.setState({
+      searchValue: e.target.value.trim()
+    });
+  };
+
+  search = () => {
+    const { current, pageSize, searchValue } = this.state;
+
+    // 点击过搜索按钮
+    this.isSearch = true;
+    // 缓存当前搜索value
+    this.currentSearchValue = searchValue;
+
+    this.getProducts(current, pageSize);
+  };
+
   componentDidMount() {
     this.getProducts(1, 3);
   }
 
   render() {
-    const { products, total } = this.state;
+    const { products, total, searchType, current, pageSize } = this.state;
 
     return (
       <Card
         title={
           <div>
-            <Select value={1}>
-              <Select.Option value={1}>根据商品名称</Select.Option>
-              <Select.Option value={2}>根据商品描述</Select.Option>
+            <Select value={searchType} onChange={this.selectChange}>
+              <Select.Option value="productName">根据商品名称</Select.Option>
+              <Select.Option value="productDesc">根据商品描述</Select.Option>
             </Select>
-            <Input placeholder="关键字" className="search-input" />
-            <Button type="primary">搜索</Button>
+            <Input
+              placeholder="关键字"
+              className="search-input"
+              onChange={this.inputChange}
+            />
+            <Button type="primary" onClick={this.search}>
+              搜索
+            </Button>
           </div>
         }
         extra={
@@ -137,10 +205,11 @@ export default class Product extends Component {
             showQuickJumper: true,
             showSizeChanger: true,
             pageSizeOptions: ["3", "6", "9", "12"],
-            defaultPageSize: 3,
+            pageSize, // 每页条数
             total, // 总数
             onChange: this.getProducts, // 页码发生改变事件
-            onShowSizeChange: this.getProducts // pageSize 变化的回调
+            onShowSizeChange: this.getProducts, // pageSize 变化的回调
+            current // 当前页数
           }}
         />
       </Card>

@@ -115,3 +115,13 @@ export const reqUpdateProductStatus = (productId, status) => axiosInstance({
     status
   }
 })
+
+export const reqSearchProducts = ({searchType, searchValue, pageNum, pageSize}) => axiosInstance({
+  method: 'GET',
+  url: '/product/search',
+  params: {
+    pageSize,
+    pageNum,
+    [searchType]: searchValue  // productName: 'aaa'
+  }
+})
