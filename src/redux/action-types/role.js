@@ -1,0 +1,1 @@
+export const GET_ROLES_SUCCESS = 'GET_ROLES_SUCCESS'

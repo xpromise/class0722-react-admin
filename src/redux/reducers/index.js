@@ -7,8 +7,10 @@ import {
 
 import user from './user';
 import category from './category';
+import role from './role';
 
 export default combineReducers({
   user,
-  categories: category
+  categories: category,
+  roles: role
 })

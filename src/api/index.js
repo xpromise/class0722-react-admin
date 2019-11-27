@@ -125,3 +125,8 @@ export const reqSearchProducts = ({searchType, searchValue, pageNum, pageSize}) 
     [searchType]: searchValue  // productName: 'aaa'
   }
 })
+
+export const reqGetRoles = () => axiosInstance({
+  method: 'GET',
+  url: '/role/get',
+})

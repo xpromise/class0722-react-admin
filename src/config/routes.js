@@ -2,6 +2,8 @@ import Home from '../components/home';
 import Login from '../containers/login';
 import NotMatch from '../components/not-match';
 import Category from '../containers/category';
+import User from '../containers/user';
+import Role from '../containers/role';
 import Product from '../components/product';
 import ProductForm from '../components/product/product-form';
 import ProductDetail from '../components/product/product-detail';
@@ -15,6 +17,16 @@ const authRoutes = [{
   {
     path: '/category',
     component: Category,
+    exact: true
+  },
+  {
+    path: '/user',
+    component: User,
+    exact: true
+  },
+  {
+    path: '/role',
+    component: Role,
     exact: true
   },
   {
