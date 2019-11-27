@@ -157,3 +157,26 @@ export const reqUpdateRole = ({
     authName
   }
 })
+
+export const reqGetUsers = () => axiosInstance({
+  method: 'GET',
+  url: '/user/get',
+})
+
+export const reqAddUser = ({
+  username,
+  password,
+  phone,
+  email,
+  roleId
+}) => axiosInstance({
+  method: 'POST',
+  url: '/user/add',
+  data: {
+    username,
+    password,
+    phone,
+    email,
+    roleId
+  }
+})

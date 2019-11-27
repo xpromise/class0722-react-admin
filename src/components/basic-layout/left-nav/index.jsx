@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Menu, Icon } from "antd";
 import { withTranslation } from "react-i18next";
+import { connect } from "react-redux";
+
 /*
   需求：给非路由组件传递路由组件的三大属性
   解决：withRouter是一个高阶组件
@@ -15,6 +17,7 @@ import "./index.less";
 
 const { SubMenu } = Menu;
 
+@connect(state => ({ menus: state.user.user.menus }))
 @withTranslation()
 @withRouter
 class LeftNav extends Component {
@@ -72,10 +75,32 @@ class LeftNav extends Component {
   render() {
     let { pathname } = this.props.location;
     pathname = pathname.startsWith("/product") ? "/product" : pathname;
-    const openKey = this.findOpenKey(menus, pathname);
-    const { t } = this.props;
+    const { t, menus: authMenus } = this.props;
+
+    // 在生成菜单之前，将没有权限访问的菜单项给过滤掉
+    const filterMenus = menus.reduce((p, menu) => {
+      // 判断权限菜单中是否包含当前菜单的path
+      // 包含就要显示 / 不包含就要过滤掉
+      if (authMenus.indexOf(menu.path) !== -1) {
+        // 包含 说明子菜单全选了
+        return [...p, menu];
+      }
+
+      // 不包含, 可能子菜单只选中一个，还要检查子菜单，
+      if (menu.children) {
+        const newMenu = { ...menu };
+        newMenu.children = menu.children.filter(
+          cMenu => authMenus.indexOf(cMenu.path) !== -1
+        );
+        return [...p, newMenu];
+      }
+
+      return p;
+    }, []);
+
+    const openKey = this.findOpenKey(filterMenus, pathname);
     // 重复调用
-    const menusList = this.createMenus(menus);
+    const menusList = this.createMenus(filterMenus);
 
     return (
       <div>

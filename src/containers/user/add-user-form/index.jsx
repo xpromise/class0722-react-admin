@@ -1,13 +1,21 @@
 import React, { Component } from "react";
 import { Form, Input, Select } from "antd";
+import PropTypes from "prop-types";
 
 const Item = Form.Item;
 const Option = Select.Option;
 
 @Form.create()
 class AddUserForm extends Component {
+  static propTypes = {
+    roles: PropTypes.array.isRequired
+  };
+
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const {
+      form: { getFieldDecorator },
+      roles
+    } = this.props;
 
     return (
       <Form labelCol={{ span: 6 }} wrapperCol={{ span: 15 }}>
@@ -28,8 +36,13 @@ class AddUserForm extends Component {
         <Item label="角色">
           {getFieldDecorator("roleId")(
             <Select placeholder="请选择分类">
-              <Option value="1">1</Option>
-              <Option value="2">2</Option>
+              {roles.map(role => {
+                return (
+                  <Option key={role._id} value={role._id}>
+                    {role.name}
+                  </Option>
+                );
+              })}
             </Select>
           )}
         </Item>

@@ -1,25 +1,32 @@
 import React, { Component } from "react";
-import { Card, Button, Table, Modal } from "antd";
+import { Card, Button, Table, Modal, message } from "antd";
 import dayjs from "dayjs";
+import { connect } from "react-redux";
+import { reqGetUsers, reqAddUser } from "../../api";
+import { getRolesAsync } from "../../redux/action-creators/role";
 
 import AddUserForm from "./add-user-form";
 import UpdateUserForm from "./update-user-form";
 
+@connect(state => ({ roles: state.roles }), { getRolesAsync })
 class User extends Component {
   state = {
-    users: [
-      {
-        _id: "5c7dafe855fb843490b93a49",
-        createTime: 1551740904866,
-        email: "aaa@aaa.com",
-        phone: "123456789",
-        roleId: "5c7d222c12d5e51908cc0380",
-        username: "aaa"
-      }
-    ], //用户数组
+    users: [], //用户数组
     addUserModalVisible: false, //是否展示创建用户的标识
     updateUserModalVisible: false //是否展示更新用户的标识
   };
+
+  componentDidMount() {
+    reqGetUsers().then(res => {
+      this.setState({
+        users: res
+      });
+    });
+
+    if (!this.props.roles.length) {
+      this.props.getRolesAsync();
+    }
+  }
 
   columns = [
     {
@@ -41,7 +48,13 @@ class User extends Component {
     },
     {
       title: "所属角色",
-      dataIndex: "roleId"
+      dataIndex: "roleId",
+      render: id => {
+        const role = this.props.roles.find(role => {
+          return role._id === id;
+        });
+        return role && role.name;
+      }
     },
     {
       title: "操作",
@@ -61,7 +74,20 @@ class User extends Component {
   ];
 
   // 创建用户的回调函数
-  addUser = () => {};
+  addUser = () => {
+    const form = this.addUserForm.props.form;
+    form.validateFields(async (err, values) => {
+      if (!err) {
+        const result = await reqAddUser(values);
+        message.success("添加用户成功");
+        form.resetFields();
+        this.setState({
+          addUserModalVisible: false,
+          users: [...this.state.users, result]
+        });
+      }
+    });
+  };
 
   // 更新用户的回调函数
   updateUser = () => {};
@@ -109,6 +135,7 @@ class User extends Component {
         >
           <AddUserForm
             wrappedComponentRef={form => (this.addUserForm = form)}
+            roles={this.props.roles}
           />
         </Modal>
 

@@ -58,12 +58,10 @@ class UpdateRoleForm extends Component {
     });
 
   render() {
-    let {
+    const {
       form: { getFieldDecorator },
       role: { name, menus }
     } = this.props;
-
-    menus = JSON.parse(menus);
 
     return (
       <Form>

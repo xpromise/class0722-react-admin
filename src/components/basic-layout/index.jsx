@@ -1,13 +1,17 @@
 import React, { Component } from "react";
 import { Layout } from "antd";
+import { Switch, Route } from "react-router-dom";
+import { connect } from "react-redux";
 
 import withCheckLogin from "../../containers/with-check-login";
 import LeftNav from "./left-nav";
 import HeaderMain from "./header-main";
+import { authRoutes } from "../../config/routes";
 
 const { Header, Content, Footer, Sider } = Layout;
 
 @withCheckLogin
+@connect(state => ({ menus: state.user.user.menus }))
 class BasicLayout extends Component {
   state = {
     collapsed: false,
@@ -24,6 +28,14 @@ class BasicLayout extends Component {
 
   render() {
     const { collapsed, isDisplay } = this.state;
+    const { menus } = this.props;
+    // 对权限路由进行过滤显示
+    const filterAuthRoutes = authRoutes.filter(
+      route =>
+        !route.path ||
+        menus.find(menu => route.path === menu || menu.startsWith("/product"))
+    );
+
     return (
       <Layout style={{ minHeight: "100vh" }}>
         <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
@@ -35,7 +47,11 @@ class BasicLayout extends Component {
           </Header>
           <Content style={{ margin: "40px 16px 0 16px" }}>
             <div style={{ padding: 24, background: "#fff", minHeight: 360 }}>
-              {this.props.children}
+              <Switch>
+                {filterAuthRoutes.map((route, index) => {
+                  return <Route {...route} key={index} />;
+                })}
+              </Switch>
             </div>
           </Content>
           <Footer style={{ textAlign: "center" }}>

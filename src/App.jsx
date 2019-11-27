@@ -4,7 +4,7 @@ import { Router } from "react-router";
 import { Spin } from "antd";
 import BasicLayout from "./components/basic-layout";
 import history from "./utils/history";
-import { authRoutes, noAuthRoutes } from "./config/routes";
+import { noAuthRoutes } from "./config/routes";
 import "./index.less";
 
 export default class App extends Component {
@@ -17,13 +17,7 @@ export default class App extends Component {
             {noAuthRoutes.map((route, index) => {
               return <Route {...route} key={index} />;
             })}
-            <BasicLayout>
-              <Switch>
-                {authRoutes.map((route, index) => {
-                  return <Route {...route} key={index} />;
-                })}
-              </Switch>
-            </BasicLayout>
+            <BasicLayout />
           </Switch>
         </Router>
       </Suspense>
