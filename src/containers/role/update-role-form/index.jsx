@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import { Form, Input, Tree } from "antd";
 import PropTypes from "prop-types";
 import menus from "../../../config/menus";
-
+import { withTranslation } from "react-i18next";
 const Item = Form.Item;
 const { TreeNode } = Tree;
 
 const treeData = [
   {
-    title: "平台权限",
+    title: "root",
     key: "0",
     children: menus.map(menu => {
       if (menu.children) {
@@ -32,6 +32,7 @@ const treeData = [
   }
 ];
 
+@withTranslation()
 @Form.create()
 class UpdateRoleForm extends Component {
   static propTypes = {
@@ -45,17 +46,25 @@ class UpdateRoleForm extends Component {
     selectedKeys: []
   };
 
-  renderTreeNodes = data =>
-    data.map(item => {
+  renderTreeNodes = data => {
+    const { t } = this.props;
+    return data.map(item => {
       if (item.children) {
         return (
-          <TreeNode title={item.title} key={item.key} dataRef={item}>
+          <TreeNode
+            title={t("layout.leftNav." + item.title)}
+            key={item.key}
+            dataRef={item}
+          >
             {this.renderTreeNodes(item.children)}
           </TreeNode>
         );
       }
-      return <TreeNode {...item} />;
+      return (
+        <TreeNode key={item.key} title={t("layout.leftNav." + item.title)} />
+      );
     });
+  };
 
   render() {
     const {

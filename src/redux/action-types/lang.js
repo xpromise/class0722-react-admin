@@ -1,0 +1,1 @@
+export const SET_LANG_SUCCESS = 'SET_LANG_SUCCESS'

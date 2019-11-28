@@ -5,6 +5,7 @@ import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { removeItem } from "../../../utils/storage";
 import { removeUserSuccess } from "../../../redux/action-creators/user";
+import { setLangSuccess } from "../../../redux/action-creators/lang";
 import { withRouter } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -14,7 +15,8 @@ import "./index.less";
 
 @withRouter
 @connect(state => ({ username: state.user.user.username }), {
-  removeUserSuccess
+  removeUserSuccess,
+  setLangSuccess
 })
 @withTranslation()
 class HeaderMain extends Component {
@@ -60,7 +62,9 @@ class HeaderMain extends Component {
     this.setState({
       isEnglish
     });
-    this.props.i18n.changeLanguage(isEnglish ? "en" : "zh");
+    const lang = isEnglish ? "en" : "zh";
+    this.props.i18n.changeLanguage(lang);
+    this.props.setLangSuccess(lang);
   };
 
   // 登出

@@ -11,7 +11,8 @@
       "charts": "Charts",
       "line": "Line",
       "bar": "Bar",
-      "pie": "Pie"
+      "pie": "Pie",
+      "root": "Root"
     }
   },
   "home": {
