@@ -132,6 +132,8 @@ class Category extends Component {
     const { categories } = this.props;
     const { addCategoryVisible, updateCategoryVisible, category } = this.state;
 
+    // categories()();
+
     return (
       <div>
         <Card

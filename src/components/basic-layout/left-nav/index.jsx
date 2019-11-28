@@ -11,12 +11,13 @@ import { connect } from "react-redux";
 */
 import { Link, withRouter } from "react-router-dom";
 import menus from "../../../config/menus";
-
+import withErrorBoundary from "../../error-boundary";
 import logo from "../../../assets/logo.png";
 import "./index.less";
 
 const { SubMenu } = Menu;
 
+@withErrorBoundary
 @connect(state => ({ menus: state.user.user.menus }))
 @withTranslation()
 @withRouter

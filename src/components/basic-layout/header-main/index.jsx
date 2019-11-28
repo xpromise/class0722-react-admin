@@ -8,11 +8,12 @@ import { removeUserSuccess } from "../../../redux/action-creators/user";
 import { setLangSuccess } from "../../../redux/action-creators/lang";
 import { withRouter } from "react-router-dom";
 import dayjs from "dayjs";
-
+import withErrorBoundary from "../../error-boundary";
 import menus from "../../../config/menus";
 
 import "./index.less";
 
+@withErrorBoundary
 @withRouter
 @connect(state => ({ username: state.user.user.username }), {
   removeUserSuccess,

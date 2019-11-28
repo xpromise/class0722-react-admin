@@ -1,14 +1,54 @@
-import Home from '../components/home';
-import Login from '../containers/login';
-import NotMatch from '../components/not-match';
-import Category from '../containers/category';
-import User from '../containers/user';
-import Role from '../containers/role';
-import Product from '../components/product';
-import ProductForm from '../components/product/product-form';
-import ProductDetail from '../components/product/product-detail';
-import Line from '../components/charts/line'
-import Pie from '../components/charts/pie'
+import Loadable from "react-loadable";
+import {
+  Spin
+} from 'antd';
+
+const Home = Loadable({
+  loader: () => import('../components/home'),
+  loading: Spin
+})
+const Login = Loadable({
+  loader: () => import('../containers/login'),
+  loading: Spin
+})
+const NotMatch = Loadable({
+  loader: () => import('../components/not-match'),
+  loading: Spin
+})
+const Category = Loadable({
+  loader: () => import('../containers/category'),
+  loading: Spin
+})
+const User = Loadable({
+  loader: () => import('../containers/user'),
+  loading: Spin
+})
+const Role = Loadable({
+  loader: () => import('../containers/role'),
+  loading: Spin
+})
+const Product = Loadable({
+  loader: () => import('../components/product'),
+  loading: Spin
+})
+const ProductForm = Loadable({
+  loader: () => import('../components/product/product-form'),
+  loading: Spin
+})
+const ProductDetail = Loadable({
+  loader: () => import('../components/product/product-detail'),
+  loading: Spin
+})
+const Line = Loadable({
+  loader: () => import('../components/charts/line'),
+  loading: Spin
+})
+const Pie = Loadable({
+  loader: () => import('../components/charts/pie'),
+  loading: Spin
+})
+// import withErrorBoundary from '../components/error-boundary';
+
 
 // 需要进行权限校验
 const authRoutes = [{
