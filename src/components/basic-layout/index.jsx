@@ -7,6 +7,7 @@ import withCheckLogin from "../../containers/with-check-login";
 import LeftNav from "./left-nav";
 import HeaderMain from "./header-main";
 import { authRoutes } from "../../config/routes";
+import ThemePicker from "./theme-picker";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -58,6 +59,7 @@ class BasicLayout extends Component {
             Ant Design ©2018 Created by Ant UED
           </Footer>
         </Layout>
+        <ThemePicker />
       </Layout>
     );
   }

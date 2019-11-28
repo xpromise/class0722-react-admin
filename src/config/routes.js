@@ -7,6 +7,8 @@ import Role from '../containers/role';
 import Product from '../components/product';
 import ProductForm from '../components/product/product-form';
 import ProductDetail from '../components/product/product-detail';
+import Line from '../components/charts/line'
+import Pie from '../components/charts/pie'
 
 // 需要进行权限校验
 const authRoutes = [{
@@ -47,6 +49,16 @@ const authRoutes = [{
   {
     path: '/product/:id',
     component: ProductDetail,
+    exact: true
+  },
+  {
+    path: '/charts/line',
+    component: Line,
+    exact: true
+  },
+  {
+    path: '/charts/pie',
+    component: Pie,
     exact: true
   },
   {
