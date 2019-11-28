@@ -199,3 +199,36 @@
 - 在 antd 社区精选组件上查看 https://ant.design/docs/react/recommendation-cn
 - 使用 braft-editor 组件开发富文本编辑器
 - 具体使用看文档 https://www.yuque.com/braft-editor/be/lzwpnr
+
+## 开发中遇到跨域问题
+
+- 服务器代理
+  - 正向代理：翻墙工具
+    - 原理：
+      - 浏览器发送请求到代理服务器(3000)上（浏览器代码是由代理服务器运行的，他们之间没有跨域问题）
+      - 代理服务器(3000)将请求转发到目标服务器(5000)上(服务器之间没有跨域问题)
+      - 代理服务器(3000)将接受到响应结果转发给浏览器
+    - 配置：
+      - 在 package.json 中配置： proxy: http://localhost:5000
+      - 此时，浏览器就只需要向代理服务器发送请求即可，所以请求地址要改成代理服务器地址
+      - 配置需要重启才能生效
+  - 反向代理：nginx
+    - 所有请求都向nginx服务器(80)发送, 由nginx服务器负责转发
+    ```
+    server {
+        listen       80;
+        server_name  localhost;
+        
+        # 接受到以 / 开头的请求（因为请求都是以 / 开头，所以匹配所有请求）
+        location / {
+            # 将请求转发到 http://localhost:3000
+            proxy_pass http://localhost:3000;
+        }
+
+        location /api/ {
+            # 将请求转发到 http://localhost:5000
+            proxy_pass http://localhost:5000;
+        }
+
+    }
+    ```

@@ -17,7 +17,7 @@ import {
 
 // axiosInstance就是Axios实例对象，它的用法和axios基本一样
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api', // 基础路径：所有请求的公共路径
+  baseURL: '/api', // 基础路径：所有请求的公共路径
   timeout: 10000, // 如果请求超过10s都没有响应结果，就自动中断请求
   headers: {
     // 公共的请求头参数
