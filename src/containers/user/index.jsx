@@ -1,156 +1,139 @@
-import React, { Component } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback
+} from "react";
 import { Card, Button, Table, Modal, message } from "antd";
 import dayjs from "dayjs";
 import { connect } from "react-redux";
-import { reqGetUsers, reqAddUser } from "../../api";
 import { getRolesAsync } from "../../redux/action-creators/role";
-
+import { reqGetUsers, reqAddUser } from "../../api";
 import AddUserForm from "./add-user-form";
-import UpdateUserForm from "./update-user-form";
 
-@connect(state => ({ roles: state.roles }), { getRolesAsync })
-class User extends Component {
-  state = {
-    users: [], //用户数组
-    addUserModalVisible: false, //是否展示创建用户的标识
-    updateUserModalVisible: false //是否展示更新用户的标识
-  };
+function User({ roles, getRolesAsync }) {
+  // 设置loading状态
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [addUserModalVisible, setAddUserModalVisible] = useState(false);
+  let addUserForm = null;
 
-  componentDidMount() {
+  // 发送请求、请求数据
+  // []代表如果里面值不发生变化就不会调用, 没有值，所以该函数只会调用一次，
+  // 相当于componentDidMount
+  useEffect(() => {
+    // 判断
+    if (!roles.length) {
+      getRolesAsync();
+    }
+
     reqGetUsers().then(res => {
-      this.setState({
-        users: res
-      });
+      setUsers(res);
+      setLoading(false);
     });
+  }, []);
 
-    if (!this.props.roles.length) {
-      this.props.getRolesAsync();
-    }
-  }
-
-  columns = [
-    {
-      title: "用户名",
-      dataIndex: "username"
-    },
-    {
-      title: "邮箱",
-      dataIndex: "email"
-    },
-    {
-      title: "电话",
-      dataIndex: "phone"
-    },
-    {
-      title: "注册时间",
-      dataIndex: "createTime",
-      render: time => dayjs(time).format("YYYY-MM-DD HH:mm:ss")
-    },
-    {
-      title: "所属角色",
-      dataIndex: "roleId",
-      render: id => {
-        const role = this.props.roles.find(role => {
-          return role._id === id;
-        });
-        return role && role.name;
-      }
-    },
-    {
-      title: "操作",
-      render: user => {
-        return (
-          <div>
-            <Button type="link" onClick={() => {}}>
-              修改
-            </Button>
-            <Button type="link" onClick={() => {}}>
-              删除
-            </Button>
-          </div>
-        );
-      }
-    }
-  ];
-
-  // 创建用户的回调函数
-  addUser = () => {
-    const form = this.addUserForm.props.form;
-    form.validateFields(async (err, values) => {
-      if (!err) {
-        const result = await reqAddUser(values);
-        message.success("添加用户成功");
-        form.resetFields();
-        this.setState({
-          addUserModalVisible: false,
-          users: [...this.state.users, result]
-        });
-      }
-    });
-  };
-
-  // 更新用户的回调函数
-  updateUser = () => {};
-
-  switchModal = (key, value) => {
-    return () => {
-      this.setState({
-        [key]: value
-      });
-    };
-  };
-
-  render() {
-    const { users, addUserModalVisible, updateUserModalVisible } = this.state;
-
-    return (
-      <Card
-        title={
-          <Button
-            type="primary"
-            onClick={this.switchModal("addUserModalVisible", true)}
-          >
-            创建用户
-          </Button>
+  // 缓存结果
+  const columns = useMemo(() => {
+    return [
+      {
+        title: "用户名",
+        dataIndex: "username"
+      },
+      {
+        title: "邮箱",
+        dataIndex: "email"
+      },
+      {
+        title: "电话",
+        dataIndex: "phone"
+      },
+      {
+        title: "注册时间",
+        dataIndex: "createTime",
+        render: time => time && dayjs(time).format("YYYY-MM-DD HH:mm:ss")
+      },
+      {
+        title: "所属角色",
+        dataIndex: "roleId",
+        render: id => {
+          const role = roles.find(role => role._id === id);
+          return role ? role.name : "";
         }
+      },
+      {
+        title: "操作",
+        render() {
+          return (
+            <Fragment>
+              <Button type="link">修改</Button>
+              <Button type="link">删除</Button>
+            </Fragment>
+          );
+        }
+      }
+    ];
+  }, [roles]);
+
+  // 缓存函数
+  const hidden = useCallback(() => {
+    setAddUserModalVisible(false);
+  }, []);
+  const show = useCallback(() => {
+    setAddUserModalVisible(true);
+  }, []);
+
+  // 添加用户
+  const addUser = () => {
+    addUserForm.form.validateFields((err, values) => {
+      if (!err) {
+        reqAddUser(values).then(res => {
+          message.success("添加用户成功~");
+          addUserForm.form.resetFields();
+          setUsers([...users, res]);
+        });
+      }
+    });
+  };
+
+  return (
+    <Card
+      title={
+        <Button type="primary" onClick={show}>
+          添加用户
+        </Button>
+      }
+    >
+      <Table
+        columns={columns}
+        dataSource={users}
+        bordered
+        rowKey="_id"
+        pagination={{
+          defaultPageSize: 5,
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10", "15", "20"],
+          showQuickJumper: true
+        }}
+        loading={loading}
+      />
+
+      <Modal
+        title="创建用户"
+        visible={addUserModalVisible}
+        onOk={addUser}
+        onCancel={hidden}
       >
-        <Table
-          columns={this.columns}
-          dataSource={users}
-          bordered
-          rowKey="_id"
-          pagination={{
-            defaultPageSize: 5,
-            showSizeChanger: true,
-            pageSizeOptions: ["5", "10", "15", "20"],
-            showQuickJumper: true
-          }}
+        <AddUserForm
+          roles={roles}
+          wrappedComponentRef={form => (addUserForm = form)}
         />
-
-        <Modal
-          title="创建用户"
-          visible={addUserModalVisible}
-          onOk={this.addUser}
-          onCancel={this.switchModal("addUserModalVisible", false)}
-        >
-          <AddUserForm
-            wrappedComponentRef={form => (this.addUserForm = form)}
-            roles={this.props.roles}
-          />
-        </Modal>
-
-        <Modal
-          title="更新用户"
-          visible={updateUserModalVisible}
-          onOk={this.updateUser}
-          onCancel={this.switchModal("updateUserModalVisible", false)}
-        >
-          <UpdateUserForm
-            wrappedComponentRef={form => (this.updateUserForm = form)}
-          />
-        </Modal>
-      </Card>
-    );
-  }
+      </Modal>
+    </Card>
+  );
 }
-export default User;
+
+export default connect(state => ({ roles: state.roles }), { getRolesAsync })(
+  User
+);
